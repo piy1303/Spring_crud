@@ -36,7 +36,7 @@ public class student_controller {
 
 
 
-    //read one record student--> get --> /api/student/id(1/2...)
+    //read one record student--> GET --> /api/student/get/id(1/2...)
 
     @GetMapping("/get/{id}")
     public ResponseEntity<Optional<Student>> getOne(@PathVariable Long id){
@@ -53,11 +53,7 @@ public class student_controller {
 
 
 
-
-
-
-
-        //read all --> get --> /api/student
+        //read all --> GET --> /api/student/getAll
         @GetMapping("/getAll")
         public ResponseEntity<List<Student>> getAll(){
 
@@ -71,7 +67,7 @@ public class student_controller {
 
 
 
-        //update student --> put --> /api/student/update/{id}  with body
+        //update student --> PUT --> /api/student/update/{id}  with body
         @PutMapping("/update/{id}")
 
         public ResponseEntity<Optional<Student>> updateStudent(@PathVariable Long id , @RequestBody Student reqStd){
@@ -89,7 +85,7 @@ public class student_controller {
 
 
 
-        //delete student --> delete --> /api/student/{id}
+        //delete student --> DELETE --> /api/student/delete/{id}
 
         @DeleteMapping("/delete/{id}")
         public ResponseEntity<String> isDeleted(@PathVariable Long id){
@@ -102,4 +98,35 @@ public class student_controller {
 
         }
 
+
+        //  soft-delete student--> PATCH --> /api/student/delete-soft/{id} -->with path variable
+        /*
+        @PatchMapping("/delete-soft/{id}")
+        public ResponseEntity<String> softlyDeleted(@PathVariable long id){
+
+            boolean valid = studentService.softDelete(id);
+
+            if (!valid){
+                return ResponseEntity.notFound().build();
+            }
+
+            return ResponseEntity.ok("Marked as softly deleted");
+
+        }
+        */
+
+
+        //  soft-delete student--> PATCH --> /api/student/delete-soft/{id} -->with request parameter
+        @PatchMapping("/delete-soft")
+        public ResponseEntity<String> softlyDeleted(@RequestParam long id){
+
+            boolean valid = studentService.softDelete(id);
+
+            if (!valid){
+                return ResponseEntity.notFound().build();
+            }
+
+            return ResponseEntity.ok("Marked as softly deleted");
+
+        }
 }

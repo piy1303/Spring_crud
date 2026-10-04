@@ -9,7 +9,7 @@ import jakarta.persistence.Id;
 public class Student {
 
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private String name;
@@ -17,6 +17,11 @@ public class Student {
     private  String email;
     private int rollNo;
     private String subject;
+
+
+    private boolean validDelete;
+
+
 
     public int getAge() {
         return age;
@@ -64,5 +69,13 @@ public class Student {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public boolean isValidDelete() {
+        return validDelete;
+    }
+
+    public void setValidDelete(boolean validDelete) {
+        this.validDelete = validDelete;
     }
 }

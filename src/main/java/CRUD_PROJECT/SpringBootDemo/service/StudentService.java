@@ -23,6 +23,8 @@ public class StudentService {
     public Student createStudent(Student studentReq) {
         //business logic --> store in db
 
+        studentReq.setValidDelete(false);
+
         Student studentResponse = studentRepository.save(studentReq);
         return studentResponse;
 
@@ -31,7 +33,7 @@ public class StudentService {
 
     public Optional<Student> getStudent(Long id) {
 
-        Optional<Student> getReq = studentRepository.findById(id);
+        Optional<Student> getReq = studentRepository.findByIdAndvaildDeleteIsFalse(id);
 
         return getReq;
     }
@@ -39,14 +41,14 @@ public class StudentService {
 
     public List<Student> getALl() {
 
-        List<Student> getAllStudent = studentRepository.findAll();
+        List<Student> getAllStudent = studentRepository.findByaildDeleteIsFalse();
 
         return getAllStudent;
     }
 
     public Student Update(Long id , Student reqStd) {
 
-        Optional<Student> getStudent = studentRepository.findById(id);
+        Optional<Student> getStudent = studentRepository.findByIdAndvaildDeleteIsFalse(id);
 
         if (getStudent.isEmpty()) return null;
 
@@ -57,6 +59,8 @@ public class StudentService {
         currStudent.setRollNo(reqStd.getRollNo());
         currStudent.setEmail(reqStd.getEmail());
         currStudent.setAge(reqStd.getAge());
+
+        currStudent.setValidDelete(false);
 
         return studentRepository.save(currStudent);
 
@@ -74,4 +78,23 @@ public class StudentService {
         return true;
 
     }
+
+    public boolean softDelete(long id) {
+
+        Optional<Student> exsistingstudent = studentRepository.findByIdAndvaildDeleteIsFalse(id);
+
+        if (exsistingstudent.isEmpty()){
+            return false;
+        }
+
+        Student markedStudent = exsistingstudent.get();
+
+        markedStudent.setValidDelete(true);
+
+        studentRepository.save(markedStudent);
+
+        return true;
+
+    }
+
 }
