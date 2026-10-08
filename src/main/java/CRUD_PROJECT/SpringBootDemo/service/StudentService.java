@@ -81,7 +81,7 @@ public class StudentService {
 
     public boolean softDelete(long id) {
 
-        Optional<Student> exsistingstudent = studentRepository.findByIdAndvaildDeleteIsFalse(id);
+        Optional<Student> exsistingstudent = studentRepository.findByIdAndValidDeleteIsFalse(id);
 
         if (exsistingstudent.isEmpty()){
             return false;
