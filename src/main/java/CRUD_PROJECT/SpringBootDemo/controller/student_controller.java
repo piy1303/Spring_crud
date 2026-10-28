@@ -1,13 +1,26 @@
 package CRUD_PROJECT.SpringBootDemo.controller;
 
-import CRUD_PROJECT.SpringBootDemo.entity.Student;
-import CRUD_PROJECT.SpringBootDemo.service.StudentService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import CRUD_PROJECT.SpringBootDemo.DTOs.CreateStudentRequestDto;
+import CRUD_PROJECT.SpringBootDemo.DTOs.CreateStudentResponseDto;
+import CRUD_PROJECT.SpringBootDemo.DTOs.UpdateStudentRequestDto;
+import CRUD_PROJECT.SpringBootDemo.DTOs.UpdateStudentResponseDto;
+import CRUD_PROJECT.SpringBootDemo.service.StudentService;
 
 @RestController        //I want when I use /api/student/   endpoint this method should be called
 @RequestMapping("/api/students")
@@ -22,10 +35,10 @@ public class student_controller {
 
  // create endpoint
     @PostMapping("/create")
-    public ResponseEntity<Student> createStudent(@RequestBody Student student){
+    public ResponseEntity<CreateStudentResponseDto> createStudent(@RequestBody CreateStudentRequestDto student){
         //create student--> post --> /api/student/create  --> +(body)
 
-        Student createdStudent =  studentService.createStudent(student);
+        CreateStudentResponseDto createdStudent =  studentService.createStudent(student);
 
         return  ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -33,15 +46,12 @@ public class student_controller {
     }
 
 
-
-
-
     //read one record student--> GET --> /api/student/get/id(1/2...)
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<Optional<Student>> getOne(@PathVariable Long id){
+    public ResponseEntity<Optional<CreateStudentResponseDto>> getOne(@PathVariable Long id){
 
-        Optional<Student> getReq = studentService.getStudent(id);
+        Optional<CreateStudentResponseDto> getReq = studentService.getStudent(id);
 
         if(getReq.isEmpty()){
             return ResponseEntity.notFound().build();
@@ -55,9 +65,9 @@ public class student_controller {
 
         //read all --> GET --> /api/student/getAll
         @GetMapping("/getAll")
-        public ResponseEntity<List<Student>> getAll(){
+        public ResponseEntity<List<CreateStudentResponseDto>> getAll(){
 
-            List<Student> getAllStudent = studentService.getALl();
+            List<CreateStudentResponseDto> getAllStudent = studentService.getALl();
 
 
             if (getAllStudent.isEmpty()) return ResponseEntity.notFound().build();
@@ -70,9 +80,9 @@ public class student_controller {
         //update student --> PUT --> /api/student/update/{id}  with body
         @PutMapping("/update/{id}")
 
-        public ResponseEntity<Optional<Student>> updateStudent(@PathVariable Long id , @RequestBody Student reqStd){
+        public ResponseEntity<Optional<UpdateStudentResponseDto>> updateStudent(@PathVariable Long id , @RequestBody UpdateStudentRequestDto reqStd){
 
-            Optional<Student> upOne = Optional.ofNullable(studentService.Update(id, reqStd));
+            Optional<UpdateStudentResponseDto> upOne = Optional.ofNullable(studentService.Update(id, reqStd));
 
 
             if (upOne.isEmpty()) return ResponseEntity.notFound().build();
@@ -130,3 +140,4 @@ public class student_controller {
 
         }
 }
+

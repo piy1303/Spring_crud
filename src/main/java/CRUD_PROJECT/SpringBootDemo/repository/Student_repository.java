@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface Student_repository extends JpaRepository<Student, Long> {
 
 
-        Optional<Student> findByIdAndvaildDeleteIsFalse(long id);
+        Optional<Student> findByIdAndValidDeleteIsFalse(long id);
 
-    List<Student>  findByaildDeleteIsFalse();
+        List<Student>  findByValidDeleteIsFalse();
 }
