@@ -3,6 +3,7 @@ package CRUD_PROJECT.SpringBootDemo.controller;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,7 +36,7 @@ public class student_controller {
 
  // create endpoint
     @PostMapping("/create")
-    public ResponseEntity<CreateStudentResponseDto> createStudent(@RequestBody CreateStudentRequestDto student){
+    public ResponseEntity<CreateStudentResponseDto> createStudent(@Valid @RequestBody CreateStudentRequestDto student){
         //create student--> post --> /api/student/create  --> +(body)
 
         CreateStudentResponseDto createdStudent =  studentService.createStudent(student);
@@ -80,7 +81,7 @@ public class student_controller {
         //update student --> PUT --> /api/student/update/{id}  with body
         @PutMapping("/update/{id}")
 
-        public ResponseEntity<Optional<UpdateStudentResponseDto>> updateStudent(@PathVariable Long id , @RequestBody UpdateStudentRequestDto reqStd){
+        public ResponseEntity<Optional<UpdateStudentResponseDto>> updateStudent(@PathVariable Long id , @Valid @RequestBody UpdateStudentRequestDto reqStd){
 
             Optional<UpdateStudentResponseDto> upOne = Optional.ofNullable(studentService.Update(id, reqStd));
 
