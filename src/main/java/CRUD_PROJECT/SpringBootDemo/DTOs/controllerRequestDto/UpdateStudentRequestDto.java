@@ -1,8 +1,8 @@
-package CRUD_PROJECT.SpringBootDemo.DTOs;
+package CRUD_PROJECT.SpringBootDemo.DTOs.controllerRequestDto;
 
 import jakarta.validation.constraints.*;
 
-public class CreateStudentRequestDto {
+public class UpdateStudentRequestDto {
 
     @NotBlank(message = "Name cannot be null/Empty or blank")
     @Size(min = 2, max = 50, message = "Student name must be within 2 to 50 character long")
@@ -18,10 +18,6 @@ public class CreateStudentRequestDto {
 
     @NotNull(message = "RollNo is required")
     private int rollNo;
-
-    @NotBlank(message = "Subject is required")
-    private String subject;
-
 
     public String getName() {
         return name;
@@ -54,14 +50,4 @@ public class CreateStudentRequestDto {
     public void setRollNo(int rollNo) {
         this.rollNo = rollNo;
     }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
-
 }

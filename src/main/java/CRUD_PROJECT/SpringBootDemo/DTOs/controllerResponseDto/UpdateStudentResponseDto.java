@@ -1,4 +1,4 @@
-package CRUD_PROJECT.SpringBootDemo.DTOs;
+package CRUD_PROJECT.SpringBootDemo.DTOs.controllerResponseDto;
 
 public class UpdateStudentResponseDto {
 

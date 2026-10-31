@@ -1,27 +1,16 @@
 package CRUD_PROJECT.SpringBootDemo.controller;
 
 import java.util.List;
-import java.util.Optional;
 
+import CRUD_PROJECT.SpringBootDemo.DTOs.controllerRequestDto.CreateStudentRequestDto;
+import CRUD_PROJECT.SpringBootDemo.DTOs.controllerResponseDto.CreateStudentResponseDto;
+import CRUD_PROJECT.SpringBootDemo.DTOs.controllerRequestDto.UpdateStudentRequestDto;
+import CRUD_PROJECT.SpringBootDemo.DTOs.controllerResponseDto.UpdateStudentResponseDto;
+import CRUD_PROJECT.SpringBootDemo.service.StudentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import CRUD_PROJECT.SpringBootDemo.DTOs.CreateStudentRequestDto;
-import CRUD_PROJECT.SpringBootDemo.DTOs.CreateStudentResponseDto;
-import CRUD_PROJECT.SpringBootDemo.DTOs.UpdateStudentRequestDto;
-import CRUD_PROJECT.SpringBootDemo.DTOs.UpdateStudentResponseDto;
-import CRUD_PROJECT.SpringBootDemo.service.StudentService;
+import org.springframework.web.bind.annotation.*;
 
 @RestController        //I want when I use /api/student/   endpoint this method should be called
 @RequestMapping("/api/students")
@@ -35,7 +24,7 @@ public class student_controller {
 
 
  // create endpoint
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<CreateStudentResponseDto> createStudent(@Valid @RequestBody CreateStudentRequestDto student){
         //create student--> post --> /api/student/create  --> +(body)
 
@@ -49,29 +38,24 @@ public class student_controller {
 
     //read one record student--> GET --> /api/student/get/id(1/2...)
 
-    @GetMapping("/get/{id}")
-    public ResponseEntity<Optional<CreateStudentResponseDto>> getOne(@PathVariable Long id){
+    @GetMapping("/{id}")
+    public ResponseEntity<CreateStudentResponseDto> getOne(@PathVariable Long id){
 
-        Optional<CreateStudentResponseDto> getReq = studentService.getStudent(id);
+        CreateStudentResponseDto getReq = studentService.getStudent(id);
 
-        if(getReq.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(getReq);
+        return ResponseEntity.
+                status(200)
+                .body(getReq);
 
     }
 
 
 
         //read all --> GET --> /api/student/getAll
-        @GetMapping("/getAll")
+        @GetMapping
         public ResponseEntity<List<CreateStudentResponseDto>> getAll(){
 
             List<CreateStudentResponseDto> getAllStudent = studentService.getALl();
-
-
-            if (getAllStudent.isEmpty()) return ResponseEntity.notFound().build();
 
             return ResponseEntity.ok(getAllStudent);
         }
@@ -79,14 +63,11 @@ public class student_controller {
 
 
         //update student --> PUT --> /api/student/update/{id}  with body
-        @PutMapping("/update/{id}")
+        @PutMapping("/{id}")
 
-        public ResponseEntity<Optional<UpdateStudentResponseDto>> updateStudent(@PathVariable Long id , @Valid @RequestBody UpdateStudentRequestDto reqStd){
+        public ResponseEntity<UpdateStudentResponseDto> updateStudent(@PathVariable Long id , @Valid @RequestBody UpdateStudentRequestDto reqStd){
 
-            Optional<UpdateStudentResponseDto> upOne = Optional.ofNullable(studentService.Update(id, reqStd));
-
-
-            if (upOne.isEmpty()) return ResponseEntity.notFound().build();
+            UpdateStudentResponseDto upOne = studentService.Update(id, reqStd);
 
             return ResponseEntity.ok(upOne);
 
@@ -98,14 +79,12 @@ public class student_controller {
 
         //delete student --> DELETE --> /api/student/delete/{id}
 
-        @DeleteMapping("/delete/{id}")
+        @DeleteMapping("/{id}")
         public ResponseEntity<String> isDeleted(@PathVariable Long id){
 
-            boolean valid = studentService.delete(id);
+            studentService.delete(id);
 
-            if (!valid) return ResponseEntity.notFound().build();
-
-            return ResponseEntity.ok("deleted");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
         }
 
@@ -131,13 +110,9 @@ public class student_controller {
         @PatchMapping("/delete-soft")
         public ResponseEntity<String> softlyDeleted(@RequestParam long id){
 
-            boolean valid = studentService.softDelete(id);
+            studentService.softDelete(id);
 
-            if (!valid){
-                return ResponseEntity.notFound().build();
-            }
-
-            return ResponseEntity.ok("Marked as softly deleted");
+            return ResponseEntity.noContent().build();
 
         }
 }

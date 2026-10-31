@@ -2,14 +2,15 @@ package CRUD_PROJECT.SpringBootDemo.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
+import CRUD_PROJECT.SpringBootDemo.exception.DuplicateResouceFoundException;
+import CRUD_PROJECT.SpringBootDemo.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
-import CRUD_PROJECT.SpringBootDemo.DTOs.CreateStudentRequestDto;
-import CRUD_PROJECT.SpringBootDemo.DTOs.CreateStudentResponseDto;
-import CRUD_PROJECT.SpringBootDemo.DTOs.UpdateStudentRequestDto;
-import CRUD_PROJECT.SpringBootDemo.DTOs.UpdateStudentResponseDto;
+import CRUD_PROJECT.SpringBootDemo.DTOs.controllerRequestDto.CreateStudentRequestDto;
+import CRUD_PROJECT.SpringBootDemo.DTOs.controllerResponseDto.CreateStudentResponseDto;
+import CRUD_PROJECT.SpringBootDemo.DTOs.controllerRequestDto.UpdateStudentRequestDto;
+import CRUD_PROJECT.SpringBootDemo.DTOs.controllerResponseDto.UpdateStudentResponseDto;
 import CRUD_PROJECT.SpringBootDemo.entity.Student;
 import CRUD_PROJECT.SpringBootDemo.repository.Student_repository;
 
@@ -30,6 +31,10 @@ public class StudentService {
 
         Student std = DtoToEntity(studentReq);
 
+        if (ExsitsByEmail(std)){
+            throw new DuplicateResouceFoundException("Student with email: " + std.getEmail() + " already exists!");
+        }
+
         Student std1 = studentRepository.save(std);
 
         return EntityToDto(std1);
@@ -38,11 +43,13 @@ public class StudentService {
     }
 
 
-    public Optional<CreateStudentResponseDto> getStudent(Long id) {
+    public CreateStudentResponseDto getStudent(Long id) {
 
-        Optional<Student> getReq = studentRepository.findByIdAndValidDeleteIsFalse(id);
+        Student getReq = studentRepository
+                .findByIdAndValidDeleteIsFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Student with id " + id + " is not found!"));
 
-        return getReq.map(this::EntityToDto);
+        return EntityToDto(getReq);
     }
 
 
@@ -55,11 +62,9 @@ public class StudentService {
 
     public UpdateStudentResponseDto Update(Long id , UpdateStudentRequestDto reqStd) {
 
-        Optional<Student> getStudent = studentRepository.findByIdAndValidDeleteIsFalse(id);
-
-        if (getStudent.isEmpty()) return null;
-
-        Student currStudent = getStudent.get();
+        Student currStudent = studentRepository
+                .findByIdAndValidDeleteIsFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Student with id " + id + " is not found!"));
 
 
         currStudent.setName(reqStd.getName());
@@ -68,6 +73,7 @@ public class StudentService {
         currStudent.setAge(reqStd.getAge());
 
         currStudent.setValidDelete(false);
+        currStudent.setUpdatedAt(String.valueOf(LocalDateTime.now()));
 
         Student s = studentRepository.save(currStudent);
 
@@ -76,33 +82,26 @@ public class StudentService {
     }
 
 
-    public boolean delete(Long id) {
+    public void delete(Long id) {
 
-        boolean getStudent = studentRepository.existsById(id);
+        Student stdudentToDelete = studentRepository
+                .findByIdAndValidDeleteIsFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Student with id " + id + " is not found!"));
 
-        if (!getStudent) return false;
-
-        studentRepository.deleteById(id);
-
-        return true;
+       studentRepository.delete(stdudentToDelete);
 
     }
 
-    public boolean softDelete(long id) {
+    public void softDelete(long id) {
 
-        Optional<Student> exsistingstudent = studentRepository.findByIdAndValidDeleteIsFalse(id);
+        Student markedStudent = studentRepository
+        .findByIdAndValidDeleteIsFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Student with id " + id + " is not found!"));
 
-        if (exsistingstudent.isEmpty()){
-            return false;
-        }
-
-        Student markedStudent = exsistingstudent.get();
 
         markedStudent.setValidDelete(true);
 
         studentRepository.save(markedStudent);
-
-        return true;
 
     }
 
@@ -155,6 +154,11 @@ public class StudentService {
 
         return  usrd;
 
+    }
+
+    private boolean ExsitsByEmail(Student student){
+
+        return studentRepository.existsByEmail(student.getEmail());
     }
 
 }
